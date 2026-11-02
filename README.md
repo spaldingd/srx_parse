@@ -137,10 +137,10 @@ Cycles and duplicate names are reported as warnings but do **not** trigger `--st
 
 | Config construct | Output file |
 |---|---|
-| `security policies from-zone A to-zone B policy ...` and `security policies global policy ...` | `rules_security-policy.csv` |
-| `security nat source rule-set ... rule ...` | `rules_nat-source.csv` |
-| `security nat destination rule-set ... rule ...` | `rules_nat-destination.csv` |
-| `security nat static rule-set ... rule ...` | `rules_nat-static.csv` |
+| `security policies from-zone A to-zone B policy ...` and `security policies global policy ...` | `<hostname>_rules_security-policy.csv` |
+| `security nat source rule-set ... rule ...` | `<hostname>_rules_nat-source.csv` |
+| `security nat destination rule-set ... rule ...` | `<hostname>_rules_nat-destination.csv` |
+| `security nat static rule-set ... rule ...` | `<hostname>_rules_nat-static.csv` |
 
 Every attribute of every policy and NAT rule is kept. Attributes without a dedicated column are written to
 `other_fields` as `path=value; path=value` (flags with no value appear as just the path), so nothing is dropped.
@@ -182,20 +182,21 @@ address book. The built-in `junos-*` applications are available everywhere.
 ```
 output/
   2026-10-03_09-36-16/
-    objects.csv
-    object_members.csv
-    rules_security-policy.csv
-    rules_nat-source.csv        (only if present in the config)
-    rules_nat-destination.csv   (only if present)
-    rules_nat-static.csv        (only if present)
-    rules_expanded.csv          (only with --expand)
-    warnings.csv
+    <hostname>_objects.csv
+    <hostname>_object_members.csv
+    <hostname>_rules_security-policy.csv
+    <hostname>_rules_nat-source.csv        (only if present in the config)
+    <hostname>_rules_nat-destination.csv   (only if present)
+    <hostname>_rules_nat-static.csv        (only if present)
+    <hostname>_rules_expanded.csv          (only with --expand)
+    <hostname>_warnings.csv
 ```
 
 - Folder names use `YYYY-MM-DD_HH-MM-SS` in **local time**, with no characters that are illegal on Windows.
 - If two runs start in the same second, the second folder gets `_2`, then `_3`, and so on. Nothing is overwritten.
 - The console summary shows the hostname, Junos version, contexts, object counts by type, rule counts per rulebase, and
   the unresolved / syntax / warning counts, then the full path of the run folder.
+- Device hostname is sanitised with non file/folder safe characters being replaced with an `_`.
 
 All CSVs are UTF-8 with a header row, `\n` line endings and **one physical line per record**. Line breaks inside a value
 are replaced with `--csv-nl-sep` (default ` | `). Multi-value cells are joined with `;`.
@@ -203,6 +204,8 @@ are replaced with `--csv-nl-sep` (default ` | `). Multi-value cells are joined w
 ---
 
 ## 6. CSV output reference
+
+All output filenames are prefixed with a file/folder safe version of the device hostname. 
 
 ### `objects.csv`
 
