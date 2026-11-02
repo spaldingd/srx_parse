@@ -1029,15 +1029,16 @@ def make_run_dir(base):
 
 
 def write_outputs(p, run_dir):
-    write_csv(os.path.join(run_dir, "objects.csv"), OBJECT_COLS, p.object_rows)
-    write_csv(os.path.join(run_dir, "object_members.csv"), MEMBER_COLS, p.member_rows)
+    safe_host = re.sub(r"[^\w.-]", "_", str(p.meta["hostname"]))
+    write_csv(os.path.join(run_dir, f"{safe_host}_objects.csv"), OBJECT_COLS, p.object_rows)
+    write_csv(os.path.join(run_dir, f"{safe_host}_object_members.csv"), MEMBER_COLS, p.member_rows)
     for rb, rows in p.rule_rows.items():
         spec = POLICY_SPEC if rb == "security-policy" else NAT_SPEC
-        write_csv(os.path.join(run_dir, "rules_%s.csv" % rb),
-                  RULE_BASE_COLS + [c for c, _, _ in spec] + RULE_TAIL_COLS, rows)
+        write_csv(os.path.join(run_dir, f"{safe_host}_rules_{rb}.csv"),
+                RULE_BASE_COLS + [c for c, _, _ in spec] + RULE_TAIL_COLS, rows)
     if p.expand:
-        write_csv(os.path.join(run_dir, "rules_expanded.csv"), EXPANDED_COLS, p.expanded)
-    write_csv(os.path.join(run_dir, "warnings.csv"), ["logical_system", "context", "message"], p.warnings)
+        write_csv(os.path.join(run_dir, f"{safe_host}_rules_expanded.csv"), EXPANDED_COLS, p.expanded)
+    write_csv(os.path.join(run_dir, f"{safe_host}_warnings.csv"), ["logical_system", "context", "message"], p.warnings)
 
 
 def print_summary(p):
